@@ -4,7 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "remix vite:build",
     "dev": "vite",
     "start": "remix-serve ./build/index.js",
     "typecheck": "tsc"
