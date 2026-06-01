@@ -13,12 +13,14 @@ export const loader = async () => {
   // Read environments to show state (server-side check)
   const hasLineToken = !!process.env.LINE_CHANNEL_ACCESS_TOKEN;
   const hasLineSecret = !!process.env.LINE_CHANNEL_SECRET;
+  const hasLineId = !!process.env.LINE_CHANNEL_ID;
   const hasGeminiKey = !!process.env.GEMINI_API_KEY;
   
   return json({
     configStatus: {
       lineAccess: hasLineToken ? "Configured" : "Missing",
       lineSecret: hasLineSecret ? "Configured" : "Missing",
+      lineId: hasLineId ? "Configured" : "Missing",
       gemini: hasGeminiKey ? "Configured" : "Missing",
     }
   });
@@ -96,6 +98,7 @@ export default function Index() {
           <div className="card-value" style={{ display: "flex", gap: "0.5rem", flexDirection: "column", fontSize: "0.95rem", fontWeight: "normal", color: "hsl(var(--text-secondary))", marginTop: "0.5rem" }}>
             <div>Access Token: <span style={{ color: configStatus.lineAccess === "Configured" ? "#10B981" : "#EF4444" }}>{configStatus.lineAccess}</span></div>
             <div>Channel Secret: <span style={{ color: configStatus.lineSecret === "Configured" ? "#10B981" : "#EF4444" }}>{configStatus.lineSecret}</span></div>
+            <div>Channel ID: <span style={{ color: configStatus.lineId === "Configured" ? "#10B981" : "#EF4444" }}>{configStatus.lineId}</span></div>
           </div>
         </div>
 
