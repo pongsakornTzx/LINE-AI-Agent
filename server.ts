@@ -1158,9 +1158,10 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     console.log('Serving production static build files from dist...');
-    app.use(express.static(path.resolve(activeDirname, 'dist')));
+    const staticDir = path.resolve(process.cwd(), 'dist');
+    app.use(express.static(staticDir));
     app.get('*', (req, res) => {
-      res.sendFile(path.resolve(activeDirname, 'dist/index.html'));
+      res.sendFile(path.resolve(staticDir, 'index.html'));
     });
   }
 
