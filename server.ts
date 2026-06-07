@@ -88,16 +88,19 @@ function getGoogleAuthClient() {
   if (googleAuthClient) return googleAuthClient;
 
   let credentials: any = null;
+  const envVal = process.env.GOOGLE_WORKSPACE_CREDENTIALS;
+  console.log(`[Diagnostic] GOOGLE_WORKSPACE_CREDENTIALS exists in env: ${!!envVal}`);
 
   if (fs.existsSync(SERVICE_ACCOUNT_FILE)) {
     try {
       credentials = JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_FILE, 'utf8'));
+      console.log('[Diagnostic] Loaded credentials from local file: google-service-account.json');
     } catch (err) {
       console.error('Error loading Google Service Account credentials file:', err);
     }
-  } else if (process.env.GOOGLE_WORKSPACE_CREDENTIALS) {
+  } else if (envVal) {
     try {
-      credentials = JSON.parse(process.env.GOOGLE_WORKSPACE_CREDENTIALS);
+      credentials = JSON.parse(envVal);
       console.log('Google Workspace credentials loaded from GOOGLE_WORKSPACE_CREDENTIALS environment variable!');
     } catch (err) {
       console.error('Error parsing GOOGLE_WORKSPACE_CREDENTIALS environment variable:', err);
@@ -107,6 +110,14 @@ function getGoogleAuthClient() {
   }
 
   if (credentials) {
+    console.log(`[Diagnostic] Credentials keys: ${Object.keys(credentials).join(', ')}`);
+    console.log(`[Diagnostic] Credentials type: ${credentials.type}`);
+    console.log(`[Diagnostic] client_id exists: ${!!credentials.client_id}`);
+    console.log(`[Diagnostic] client_secret exists: ${!!credentials.client_secret}`);
+    console.log(`[Diagnostic] refresh_token exists: ${!!credentials.refresh_token}`);
+    console.log(`[Diagnostic] client_email exists: ${!!credentials.client_email}`);
+    console.log(`[Diagnostic] private_key exists: ${!!credentials.private_key}`);
+
     try {
       // Support authorized_user type (OAuth2 refresh token)
       if (credentials.type === 'authorized_user') {
@@ -692,7 +703,7 @@ async function startServer() {
     });
   });
 
-  app.get('/api/events', (req, res) => {
+  app.get('/api/events', async (req, res) => {
     try {
       const auth = getGoogleAuthClient();
       if (!auth) {
@@ -703,6 +714,22 @@ async function startServer() {
           error: "Google Calendar not connected"
         });
       }
+
+      // Verify Google Credentials connection by attempting to obtain/refresh access token
+      try {
+        console.log('[Diagnostic] Verifying Google Calendar connection status...');
+        await auth.getAccessToken();
+        console.log('[Diagnostic] Google Calendar connection successfully verified!');
+      } catch (authErr: any) {
+        console.error('[Diagnostic] Google Calendar API auth verification error:', authErr.message || authErr);
+        return res.json({
+          success: false,
+          events: [],
+          connected: false,
+          error: `Google Calendar Auth Error: ${authErr.message || authErr}`
+        });
+      }
+
       const events = loadVirtualEvents();
       res.json({ success: true, events, connected: true });
     } catch (err: any) {
