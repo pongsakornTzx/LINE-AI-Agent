@@ -1,0 +1,24 @@
+# Node.js dependencies
+node_modules/
+
+# Production build artifacts
+dist/
+dist.zip
+
+# Local configuration and credentials (CRITICAL)
+.env
+google-service-account.json
+
+# Internal state databases
+events-db.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Tool-specific directories
+.antigravity/
+.agents/
+.vscode/

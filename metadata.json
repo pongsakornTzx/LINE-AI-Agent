@@ -1,0 +1,1 @@
+{"name":" LINE AI Agent","description":"An interactive, full-stack AI Assistant that parses natural language instructions, automates execution steps, and dispatches real notifications directly to LINE chats.","requestFramePermissions":[],"majorCapabilities":["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]}
